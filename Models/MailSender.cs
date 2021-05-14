@@ -48,10 +48,12 @@ namespace RealEstateAPI.Models
 
             #region send Message
 
+            feedback.FeedbackId = Guid.NewGuid();
+
             MailMessage msg = new MailMessage();
             msg.Subject = "Contacto Cliente";
             msg.From = new MailAddress("contact@moneta.studio", "Contacto Moneta");
-            msg.To.Add(new MailAddress("tigre4e@gmail.com"));
+            msg.To.Add(new MailAddress("guadalupe.marrero@gmail.com"));
             msg.BodyTransferEncoding = TransferEncoding.Base64;
 
             msg.Body = getHtmlBody(feedback);
