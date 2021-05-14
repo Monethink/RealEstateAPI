@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
+using System.Net.Http;
+using System.Net.Http.Headers;
+using RealEstateAPI.Models;
 
 namespace RealEstateAPI.Controllers
 {
@@ -12,19 +11,42 @@ namespace RealEstateAPI.Controllers
     [Route("api/")]
     public class RealEstateController : ControllerBase
     {
+        static HttpClient client = new HttpClient();
+        static RealEstateController() {
+            client.BaseAddress = new Uri("https://api.bitso.com/");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+        }
+
         public RealEstateController() { }
 
         [HttpGet("Forex")]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<Decimal?> GetForex()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            ForexResponse responseEntity = null;
+            HttpResponseMessage response = await client.GetAsync("v3/ticker/?book=tusd_mxn");
+            if (response.IsSuccessStatusCode)
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+                responseEntity = await response.Content.ReadAsAsync<ForexResponse>();
+                return responseEntity.payload.last;
+            }
+            return null;
+        }
+
+        // POST: api/Feedback
+        [HttpPost("Feedback")]
+        public async Task<ActionResult> Feedback([FromBody] Feedback feedback)
+        {
+            try
+            {
+                MailSender.SendMail(feedback);
+            }
+            catch (Exception ex) {
+                return BadRequest(ex);
+            }
+
+            return Ok();
         }
     }
 }
