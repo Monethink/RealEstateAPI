@@ -79,8 +79,8 @@ namespace RealEstateAPI.Models
         }
 
         private static string getHtmlBody(Feedback feedback) {
-            string body = "<body><p>Favor de no responder a este correo</p><p>Notificacion no. {0}</p><p>Correo de remitente: {1}</p><p>Cuerpo: <br><br>{2}</p></body>";
-            body = String.Format(body, feedback.FeedbackId.ToString(), feedback.Email, feedback.Body);
+            string body = "<body><p>Favor de no responder a este correo</p><p>Notificacion no. {0}</p><p>Correo de remitente: {1}</p><p>Asunto: {2}</p><p>Cuerpo: <br><br>{3}</p></body>";
+            body = String.Format(body, feedback.FeedbackId.ToString(), feedback.Email, feedback.Subject, feedback.Body);
             body = body.Replace(Environment.NewLine, "<br>");
             return body;
         }
